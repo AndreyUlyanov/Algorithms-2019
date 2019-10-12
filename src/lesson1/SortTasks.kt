@@ -2,6 +2,8 @@
 
 package lesson1
 
+import java.io.File
+
 /**
  * Сортировка времён
  *
@@ -97,7 +99,20 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val list = Array(7740) { 0 }
+    for (line in File(inputName).readLines()) {
+        val index = (line.toDouble() * 10 + 2730).toInt()
+        list[index]++
+    }
+    File(outputName).bufferedWriter().use {
+        for (i in list.indices) {
+            while (list[i] > 0) {
+                it.write(((i - 2730) / 10.0).toString())
+                it.newLine()
+                list[i]--
+            }
+        }
+    }
 }
 
 /**
@@ -130,7 +145,32 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val map = mutableMapOf<Int, Int>()
+    var popularNumber = 0
+    var quantity = 0
+
+    for (line in File(inputName).readLines()) {
+        val number = line.toInt()
+        map[number] = map.getOrPut(number) { 0 } + 1
+        if (quantity == map[number] && popularNumber > number) popularNumber = number
+        if (quantity < map[number]!!) {
+            quantity = map[number]!!
+            popularNumber = number
+        }
+    }
+
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            if (line.toIntOrNull() != popularNumber) {
+                it.write(line)
+                it.newLine()
+            }
+        }
+        for (i in 0 until quantity) {
+            it.write(popularNumber.toString())
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -148,6 +188,26 @@ fun sortSequence(inputName: String, outputName: String) {
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    TODO()
+    var i = 0
+    var j = first.size
+    var u = 0
+
+    do {
+        if (first[i] <= second[j]!!) {
+            second[u] = first[i]
+            i++
+        } else {
+            second[u] = second[j]
+            j++
+        }
+        u++
+    } while (i < first.size && j < second.size)
+
+    while (i < first.size) {
+        second[u] = first[i]
+        i++
+        u++
+    }
+
 }
 
