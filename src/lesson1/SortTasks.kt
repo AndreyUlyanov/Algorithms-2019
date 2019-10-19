@@ -98,12 +98,18 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
-fun sortTemperatures(inputName: String, outputName: String) {
-    val list = Array(7740) { 0 }
-    for (line in File(inputName).readLines()) {
-        val index = (line.toDouble() * 10 + 2730).toInt()
-        list[index]++
+fun sortTemperatures(inputName: String, outputName: String) {       // оценка быстродействия O(n)
+    val list = Array(7740) { 0 }                    // оценка ресурсоемкости O(1)
+
+    File(inputName).bufferedReader().use {
+        var line = it.readLine()
+        while (line != null) {
+            val index = (line.toDouble() * 10 + 2730).toInt()
+            list[index]++
+            line = it.readLine()
+        }
     }
+
     File(outputName).bufferedWriter().use {
         for (i in list.indices) {
             while (list[i] > 0) {
@@ -144,23 +150,29 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
-fun sortSequence(inputName: String, outputName: String) {
-    val map = mutableMapOf<Int, Int>()
+fun sortSequence(inputName: String, outputName: String) {                  // оценка быстродействия O(n)
+    val map = mutableMapOf<Int, Int>()                  // оценка ресурсоемкости O(n)
     var popularNumber = 0
     var quantity = 0
+    val text = mutableListOf<String>()
 
-    for (line in File(inputName).readLines()) {
-        val number = line.toInt()
-        map[number] = map.getOrPut(number) { 0 } + 1
-        if (quantity == map[number] && popularNumber > number) popularNumber = number
-        if (quantity < map[number]!!) {
-            quantity = map[number]!!
-            popularNumber = number
+    File(inputName).bufferedReader().use {
+        var line = it.readLine()
+        while (line != null) {
+            val number = line.toInt()
+            map[number] = map.getOrPut(number) { 0 } + 1
+            if (quantity == map[number] && popularNumber > number) popularNumber = number
+            if (quantity < map[number]!!) {
+                quantity = map[number]!!
+                popularNumber = number
+            }
+            text.add(line)
+            line = it.readLine()
         }
     }
 
     File(outputName).bufferedWriter().use {
-        for (line in File(inputName).readLines()) {
+        for (line in text) {
             if (line.toIntOrNull() != popularNumber) {
                 it.write(line)
                 it.newLine()
@@ -187,8 +199,8 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
-fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    var i = 0
+fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {     // оценка быстродействия O(second.size)
+    var i = 0                                                                 // оценка ресурсоемкости O(1)
     var j = first.size
     var u = 0
 

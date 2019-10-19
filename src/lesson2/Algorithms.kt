@@ -94,8 +94,24 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
-fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+fun longestCommonSubstring(first: String, second: String): String {        // оценка быстродействия O(n*m)
+    val list = Array(second.length) { 0 }                       // оценка ресурсоемкости О(m)
+    var index = 0                                                          // n = first.length; m = second.length
+    var length = 0
+    for (letter in first) {
+        for (j in list.size - 1 downTo 0) {
+            if (letter == second[j]) {
+                list[j] = 1 + if (j != 0) list[j - 1] else 0
+                if (length < list[j]) {
+                    index = j
+                    length = list[j]
+                }
+            } else list[j] = 0
+        }
+    }
+    val ans = StringBuilder()
+    for (i in index - length + 1..index) ans.append(second[i])
+    return ans.toString()
 }
 
 /**
