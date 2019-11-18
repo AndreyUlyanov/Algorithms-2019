@@ -202,16 +202,64 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
      * Найти множество всех элементов меньше заданного
      * Сложная
      */
+    // быстродействие в плохом случае O(n)
+    // трудоёмкость в плохом случае O(n)
+    // связи с деревом не предусмотрено
     override fun headSet(toElement: T): SortedSet<T> {
-        TODO()
+        val result = sortedSetOf<T>()
+        val stack = Stack<Node<T>>()
+        var node = root
+
+        while (node != null) {
+            stack.push(node)
+            node = node.left
+        }
+
+        while (stack.size != 0) {
+            node = stack.pop()
+            if (node.value < toElement) result.add(node.value)
+            if (node?.right != null && node.value < toElement) {
+                node = node.right
+
+                while (node != null) {
+                    stack.push(node)
+                    node = node.left
+                }
+            }
+        }
+        return result
     }
 
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
      */
+    // быстродействие в плохом случае O(n)
+    // трудоёмкость в плохом случае O(n)
+    // связи с деревом не предусмотрено
     override fun tailSet(fromElement: T): SortedSet<T> {
-        TODO()
+        val result = sortedSetOf<T>()
+        val stack = Stack<Node<T>>()
+        var node = root
+
+        while (node != null) {
+            stack.push(node)
+            node = node.right
+        }
+
+        while (stack.size != 0) {
+            node = stack.pop()
+            if (node.value >= fromElement) result.add(node.value)
+            if (node?.left != null && node.value > fromElement) {
+                node = node.left
+
+                while (node != null) {
+                    stack.push(node)
+                    node = node.right
+                }
+            }
+        }
+        return result
     }
 
     override fun first(): T {

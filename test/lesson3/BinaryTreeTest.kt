@@ -33,6 +33,11 @@ class BinaryTreeTest {
         assertTrue(tree.checkInvariant())
         assertEquals(1, tree.first())
         assertEquals(20, tree.last())
+
+        tree.add(Int.MAX_VALUE)
+        assertEquals(Int.MAX_VALUE, tree.last())
+        tree.add(Int.MIN_VALUE)
+        assertEquals(Int.MIN_VALUE, tree.first())
     }
 
     @Test
@@ -81,6 +86,10 @@ class BinaryTreeTest {
                 binarySet.height() <= originalHeight,
                 "After removal of $toRemove from $list binary tree height increased"
             )
+
+            assertFalse(binarySet.remove(Int.MIN_VALUE))
+            binarySet.add(Int.MIN_VALUE)
+            assertTrue(binarySet.remove(Int.MIN_VALUE))
         }
     }
 
