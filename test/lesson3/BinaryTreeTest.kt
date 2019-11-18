@@ -123,6 +123,7 @@ class BinaryTreeTest {
             val binaryIt = binarySet.iterator()
             println("Traversing $list")
             while (treeIt.hasNext()) {
+                assertTrue(binaryIt.hasNext())
                 assertEquals(treeIt.next(), binaryIt.next(), "Incorrect iterator state while iterating $treeSet")
             }
             val iterator1 = binarySet.iterator()
@@ -193,6 +194,7 @@ class BinaryTreeTest {
             }
             assertTrue(binarySet.checkInvariant(), "Binary tree invariant is false after tree.iterator().remove()")
         }
+
     }
 
     @Test
