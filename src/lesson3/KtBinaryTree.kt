@@ -3,6 +3,9 @@ package lesson3
 import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.math.max
+import java.util.Stack
+
+
 
 // Attention: comparable supported but comparator is not
 class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
@@ -17,6 +20,8 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
         var left: Node<T>? = null
 
         var right: Node<T>? = null
+
+        var parent: Node<T>? = null
     }
 
     override fun add(element: T): Boolean {
@@ -26,6 +31,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
             return false
         }
         val newNode = Node(element)
+        newNode.parent = closest
         when {
             closest == null -> root = newNode
             comparison < 0 -> {
@@ -62,8 +68,51 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
      * Удаление элемента в дереве
      * Средняя
      */
+    // быстродействие O(h) h - height of the tree
+    // трудоёмкость O(1)
     override fun remove(element: T): Boolean {
-        TODO()
+        val item = find(element)
+
+        return if (item == null || element.compareTo(item.value) != 0) false
+        else {
+            size--
+            val parent = item.parent
+
+            when {
+                item.left == null && item.right == null -> parent.swapElement(item, null)
+                item.left == null -> parent.swapElement(item, item.right)
+                item.right == null -> parent.swapElement(item, item.left)
+                else -> {
+                    var swapNode = item.left!!
+
+                    while (swapNode.right != null) {
+                        swapNode = swapNode.right!!
+                    }
+
+                    swapNode.parent.swapElement(swapNode, swapNode.left)
+
+                    val newNode = Node(swapNode.value)
+
+                    newNode.left = if (item.left?.value == swapNode.value) item.left?.left else item.left
+                    newNode.right = item.right
+
+                    parent.swapElement(item, newNode)
+                }
+            }
+            true
+        }
+    }
+
+    private fun Node<T>?.swapElement(node: Node<T>, newNode: Node<T>?) {
+        newNode?.parent = this
+
+        when {
+            this == null -> root = newNode
+            this.left?.value?.compareTo(node.value) == 0 -> this.left = newNode
+            else -> this.right = newNode
+        }
+
+
     }
 
     override operator fun contains(element: T): Boolean {
@@ -84,31 +133,56 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     }
 
     inner class BinaryTreeIterator internal constructor() : MutableIterator<T> {
+
+        private var current: Node<T>? = null
+        private var stack: Stack<Node<T>> = Stack()
+
+        init {
+            var node = root
+            while (node != null) {
+                stack.push(node)
+                node = node.left
+            }
+        }
+
         /**
          * Проверка наличия следующего элемента
          * Средняя
          */
-        override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
-        }
+        // быстродействие O(1)
+        // трудоёмкость O(h) h - height of the tree
+        override fun hasNext(): Boolean = stack.isNotEmpty()
 
         /**
          * Поиск следующего элемента
          * Средняя
          */
+        // быстродействие O(n)
+        // трудоёмкость O(h) h - height of the tree
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            if (!hasNext()) throw NoSuchElementException()
+
+            var node = stack.pop()
+            current = node
+            if (node.right != null) {
+                node = node.right
+
+                while (node != null) {
+                    stack.push(node)
+                    node = node.left
+                }
+            }
+            return current!!.value
         }
 
         /**
          * Удаление следующего элемента
          * Сложная
          */
+        // быстродействие O(h) h - height of the tree
+        // трудоёмкость O(1)
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            remove(current?.value ?: return)
         }
     }
 
